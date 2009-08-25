@@ -16,7 +16,10 @@
           { "class_name":      "template",
             "header":          "This is a Header!",
             "other_content":   "And now...some content.",
-            "content":         "Just content."});
+            "content":         "Just content."},
+          { "begin_sep":       "{",
+            "end_sep":         "}"
+          });
 
         $("#template_target").append(html);
       });
@@ -30,7 +33,7 @@
   </ul>
 
   <div id="template" style="display:none">
-    <li class="__class_name__">__other_content__</li>
+    <li class="{class_name}">{other_content}</li>
   </div>
 </body>
 </html>
