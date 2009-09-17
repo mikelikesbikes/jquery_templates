@@ -10,18 +10,16 @@
   <script type="text/javascript" charset="utf-8">
     (function($){
       $(function() {
-        var template = $("#template").html();
+        var template = new $.template($("#template").html(),
+          { "begin_sep":       "{",
+            "end_sep":         "}"
+        });
 
-        var html = $.template(template,
+        $("#template_target").append(template.to_s(
           { "class_name":      "template",
             "header":          "This is a Header!",
             "other_content":   "And now...some content.",
-            "content":         "Just content."},
-          { "begin_sep":       "{",
-            "end_sep":         "}"
-          });
-
-        $("#template_target").append(html);
+            "content":         "Just content."}));
       });
     })(jQuery);
   </script>

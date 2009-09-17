@@ -1,17 +1,20 @@
 (function($) {
-  $.template = function(str, params, options) {
-    var settings = $.extend({}, $.template.defaults, options);
+  $.template = function(str, options){
+    this.defaults = {
+      "begin_sep" : "__",
+      "end_sep": "__"
+    };
 
-    regex = new RegExp(settings.begin_sep + "(.+?)" + settings.end_sep, "g");
-    return str.replace(regex,
-      function (a, b) {
-        var r = params[b];
-        return typeof r === 'string' || typeof r === 'number' ? r : "";
+    this.settings = $.extend({}, $.template.defaults, options);
+    this.str = str; // modify to take jquery, string, function
+
+    this.to_s = function(params) {
+      regex = new RegExp(this.settings.begin_sep + "(.+?)" + this.settings.end_sep, "g");
+      return this.str.replace(regex,
+        function (m, key) {
+          var value = params[key];
+          return typeof value === 'string' || typeof value === 'number' ? value : "";
       });
-  };
-
-  $.template.defaults = {
-    "begin_sep" : "__",
-    "end_sep": "__"
-  };
+    }
+  }
 })(jQuery);
