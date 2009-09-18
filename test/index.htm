@@ -54,12 +54,28 @@ test("it should replace variables with no parameter value with blank", function(
   equals(actual, '<li class=""></li>');
 })
 
-// module("when a template is used as a parameter to jQuery.prepend");
-// test("it should evaluate the template", function() {
-//   var template = new $.Template("#template li");
-//   $("#target").prepend(template, {"class_name": "template_class", "content": "template content"});
-//   ok(false, "not implemented");
-// });
+module("when a template is used as a parameter to jQuery.domManip", {
+  setup: function() {
+    this.template = new $.Template('<li class="__class_name__">__content__</li>');
+    this.target = $("#target");
+    this.template.fillCalled = false;
+    this.template.fill = function() {
+      this.fillCalled = true;
+      return "<b>template string</b>";
+    }
+  },
+  teardown: function() {
+    // this.target.empty();
+  }
+});
+test("it should evaluate the template", function() {
+  this.target.prepend(this.template, {"class_name": "template_class", "content": "template content"});
+  equals(this.target.children().length, 1);
+});
+test("it should add the evaluated template", function() {
+  this.target.prepend(this.template, {"class_name": "template_class", "content": "template content"});
+  ok(this.template.fillCalled);
+})
 
 </script>
   <!-- qUnit framework HTML -->
@@ -72,7 +88,6 @@ test("it should replace variables with no parameter value with blank", function(
   <!-- HTML used by tests -->
   <div class="hidden">
     <ul id="target"></ul>
-
     <div id="template">
     </div>
   </div>
