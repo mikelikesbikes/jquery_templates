@@ -9,18 +9,23 @@
   <script src="jquery-templates.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
     jQuery(function($){
-      var template = new $.Template($("#template").html(),
-        { "begin_sep":       "{",
-          "end_sep":         "}"
+      var templates = [];
+
+      templates[0] = new $.Template('<li class="__class_name__">__other_content__</li>'); // pass template text directly
+      templates[1] = new $.Template($("#template").html()); // dynamic version of the previous
+      templates[2] = new $.Template("#template_2"); // pass a selector
+      templates[3] = new $.Template($("#template_2")); // pass a jquery object
+      // var t_func = function() { return $("#template_2") };
+      // templates[4] = new $.Template(t_func); // pass a function
+
+      $.each(templates, function() {
+        $("#template_target").append(this,
+          { "class_name":      "template",
+            "header":          "This is a Header!",
+            "other_content":   "And now...some content.",
+            "content":         "Just content."});
       });
 
-
-
-      $("#template_target").append(template,
-        { "class_name":      "template",
-          "header":          "This is a Header!",
-          "other_content":   "And now...some content.",
-          "content":         "Just content."});
 
       // future thoughts
       // $("#hi").templatize()
@@ -34,7 +39,11 @@
   </ul>
 
   <div id="template" style="display:none">
-    <li class="{class_name}">{other_content}</li>
+    <li class="__class_name__">__other_content__</li>
+  </div>
+
+  <div id="other_template" style="display:none">
+    <li id="template_2" class="__class_name__">__other_content__</li>
   </div>
 </body>
 </html>
