@@ -18,14 +18,15 @@
     "end_sep": "__"
   };
 
-  var domManip = $.fn.domManip;
-  $.fn.domManip = function() {
-    var args = arguments[0];
-    if(args && args.length > 1 && args[0] instanceof $.Template) {
-      arguments[0] = [ args[0].fill(args[1]) ];
-    }
+  (function(oldDomManip){
+    $.fn.domManip = function() {
+      var args = arguments[0];
+      if(args && args.length > 1 && args[0] instanceof $.Template) {
+        arguments[0] = [ args[0].fill(args[1]) ];
+      }
 
-    // Call the original method
-    return domManip.apply(this, arguments);
-  }
+      // Call the original method
+      return oldDomManip.apply(this, arguments);
+    }
+  })($.fn.domManip);
 })(jQuery);
