@@ -2,7 +2,7 @@
   $.Template = function(str, options){
 
     this.settings = $.extend({}, $.Template.defaults, options);
-    this.str = $('<div>').append($(str).clone()).remove().html(); // modify to take jquery, string, function
+    this.str = $.trim($('<div>').append($(str).clone()).remove().html()); // modify to take jquery, string, function
 
     this.fill = function(params) {
       regex = new RegExp(this.settings.begin_sep + "(.+?)" + this.settings.end_sep, "g");

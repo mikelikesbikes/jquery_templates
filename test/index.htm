@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+  <title>jquery-templates tests</title>
+  <script language="javascript" src="jquery.js" type="text/javascript"></script>
+  <script language="javascript" src="testrunner.js" type="text/javascript"></script>
+  <script language="javascript" src="../jquery.templates.js" type="text/javascript"></script>
+  <!-- add a script reference to your library here -->
+  <link media="screen" href="testsuite.css" type="text/css" rel="stylesheet"/>
+  <style>
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<script language="javascript" type="text/javascript">
+
+// --- TESTS ---
+module("when a template is created", {
+  setup: function() {
+    this.source = '<li class="__class_name__">__content__</li>'
+    $("#template").append($(this.source));
+  },
+  teardown: function() {
+    $("#template").empty();
+  }
+});
+test("it should be able to be created from html source", function() {
+  var template = new $.Template(this.source);
+  equals(template.str, this.source);
+});
+
+test("it should be able to be created from jquery selector", function() {
+  var template = new $.Template("#template li");
+  equals(template.str, this.source);
+});
+
+test("it should be able to be created from jquery object", function() {
+  var template = new $.Template($("#template li"));
+  equals(template.str, this.source);
+});
+
+module("when a template is filled", {
+  setup: function() {
+    this.template = new $.Template('<li class="__class_name__">__content__</li>');
+  }
+});
+test("it should replace variable names with parameter values", function() {
+  var actual = this.template.fill({"class_name": "template_class", "content": "content"});
+  equals(actual, '<li class="template_class">content</li>');
+});
+test("it should replace variables with no parameter value with blank", function() {
+  var actual = this.template.fill({});
+  equals(actual, '<li class=""></li>');
+})
+
+// module("when a template is used as a parameter to jQuery.prepend");
+// test("it should evaluate the template", function() {
+//   var template = new $.Template("#template li");
+//   $("#target").prepend(template, {"class_name": "template_class", "content": "template content"});
+//   ok(false, "not implemented");
+// });
+
+</script>
+  <!-- qUnit framework HTML -->
+  <h1>jquery-templates</h1>
+  <h2 id="banner"></h2>
+  <ol id="tests"></ol>
+  <div id="results"></div>
+  <div id="main"></div>
+
+  <!-- HTML used by tests -->
+  <div class="hidden">
+    <ul id="target"></ul>
+
+    <div id="template">
+    </div>
+  </div>
+
+</body>
+</html>
