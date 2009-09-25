@@ -26,9 +26,13 @@
             "content":         "Just content."});
       });
 
-
-      // future thoughts
-      // $("#hi").templatize()
+      var t = $("#template li").add("#other_template li").templatize([{
+          "class_name":     "template1",
+          "other_content":  "templatize content1"
+        },{
+          "class_name":     "template2",
+          "other_content":  "templatize content2"
+        }]);
     });
   </script>
 </head>

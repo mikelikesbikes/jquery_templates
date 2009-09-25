@@ -29,4 +29,13 @@
       return oldDomManip.apply(this, arguments);
     }
   })($.fn.domManip);
+  
+  $.fn.templatize = function(params, options){
+    var $templates = $([]);
+    this.each(function(index, element){
+      var template = new $.Template($(element), options);
+      $templates = $templates.add(template.fill($.isArray(params)? params[index]||{} : params))
+    });
+    return $templates;
+  }
 })(jQuery);
