@@ -18,7 +18,7 @@
 // --- TESTS ---
 module("when a template is created", {
   setup: function() {
-    this.source = '<li class="__class_name__">__content__</li>'
+    this.source = '<li class="__class_name__">__content__</li>';
     $("#template").append($(this.source));
   },
   teardown: function() {
@@ -40,6 +40,33 @@ test("it should be able to be created from jquery object", function() {
   equals(template.str, this.source);
 });
 
+module("before a template is filled", {
+  setup: function(){
+    this.params = {"class_name": "template_class", "content": "template content"};
+    this.beforeFillCalled = false;
+    this.beforeFill = function(){
+      this.beforeFillCalled = true;
+      this.instanceofTemplate = (this instanceof $.Template);
+      return false;
+    };
+    this.template = new $.Template('<li class="__class_name__">__content__</li>', {"beforeFill":this.beforeFill});
+  },
+  teardown: function(){
+  }
+});
+test("it should fire the 'beforeFill' callback", function(){
+  this.template.fill(this.params);
+  same(this.template.beforeFillCalled, true);
+});
+test("it should pass the template to 'beforeFill' as 'this'", function(){
+  this.template.fill(this.params);
+  same(this.template.instanceofTemplate, true);
+});
+test("it should not fill the template if 'beforeFill' returns false", function(){
+  var actual = this.template.fill(this.params);
+  equals(actual, '');
+});
+
 module("when a template is filled", {
   setup: function() {
     this.template = new $.Template('<li class="__class_name__">__content__</li>');
@@ -52,7 +79,7 @@ test("it should replace variable names with parameter values", function() {
 test("it should replace variables with no parameter value with blank", function() {
   var actual = this.template.fill({});
   equals(actual, '<li class=""></li>');
-})
+});
 
 module("when a template is used as a parameter to jQuery.domManip", {
   setup: function() {
@@ -62,7 +89,7 @@ module("when a template is used as a parameter to jQuery.domManip", {
     this.template.fill = function() {
       this.fillCalled = true;
       return "<b>template string</b>";
-    }
+    };
   },
   teardown: function() {
     // this.target.empty();
@@ -75,7 +102,7 @@ test("it should evaluate the template", function() {
 test("it should add the evaluated template", function() {
   this.target.prepend(this.template, {"class_name": "template_class", "content": "template content"});
   ok(this.template.fillCalled);
-})
+});
 
 </script>
   <!-- qUnit framework HTML -->
@@ -88,8 +115,7 @@ test("it should add the evaluated template", function() {
   <!-- HTML used by tests -->
   <div class="hidden">
     <ul id="target"></ul>
-    <div id="template">
-    </div>
+    <ul id="template"></ul>
   </div>
 
 </body>
