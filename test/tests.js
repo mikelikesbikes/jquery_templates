@@ -27,15 +27,13 @@
   module("before a template is filled", {
     setup: function(){
       this.params = {"class_name": "template_class", "content": "template content"};
-      this.beforeFillCalled = false;
       this.beforeFill = function(){
         this.beforeFillCalled = true;
         this.instanceofTemplate = (this instanceof $.Template);
         return false;
       };
       this.template = new $.Template('<li class="__class_name__">__content__</li>', {"beforeFill":this.beforeFill});
-    },
-    teardown: function(){
+      this.template.beforeFillCalled = false;
     }
   });
   test("it should fire the 'beforeFill' callback", function(){
@@ -74,9 +72,6 @@
         this.fillCalled = true;
         return "<b>template string</b>";
       };
-    },
-    teardown: function() {
-      // this.target.empty();
     }
   });
   test("it should evaluate the template", function() {
@@ -91,15 +86,12 @@
   module("after a template is filled", {
     setup: function(){
       this.params = {"class_name": "template_class", "content": "template content"};
-      this.afterFillCalled = false;
       this.afterFill = function(){
         this.afterFillCalled = true;
         this.instanceofTemplate = (this instanceof $.Template);
       };
       this.template = new $.Template('<li class="__class_name__">__content__</li>', {"afterFill":this.afterFill});
-    },
-    teardown: function(){
-      
+      this.template.afterFillCalled = false;
     }
   });
   test("it should fire the 'afterFill' callback", function(){
@@ -111,4 +103,67 @@
     same(this.template.instanceofTemplate, true);
   });
 
+  module("when zero matched elements are templatized", {
+    setup: function(){
+      this.params = {"class_name": "template_class", "content": "template content"};
+      window.afterFillCalled = false;
+      this.afterFill = function(){
+        window.afterFillCalled = true;
+      };
+    },
+    teardown: function(){
+      window.afterFillCalled = undefined;
+    }
+  });
+  test("it should return an empty jQuery object", function(){
+    var actual = $([]).templatize();
+    equals(actual.length, $([]).length);
+  });
+  test("it should not fill any templates", function(){
+    var actual = $([]).templatize(this.params, {"afterFill": this.afterFill});
+    same(window.afterFillCalled, false);
+  });
+
+  module("when one or more matched elements are templatized", {
+    setup: function(){
+      this.source = '<li class="__class_name__">__content__</li><li class="__class_name__">__content__</li>';
+      $("#template").append($(this.source));
+      this.params = {"class_name": "template_class", "content": "template content"};
+      window.afterFillCount = 0;
+      this.afterFill = function(){
+        window.afterFillCount++;
+      };
+    },
+    teardown: function(){
+        $("#template").empty();
+      }
+  });
+  test("it should fill a template for each matched element", function(){
+    var actual = $("#template li").templatize(this.params, {"afterFill": this.afterFill});
+    equals(window.afterFillCount, 2);
+  });
+  test("it should return a jQuery object matching the filled template(s)", function(){
+    var $actual = $("#template li").templatize(this.params);
+    var $expect = $('<li class="template_class">template content</li>').add('<li class="template_class">template content</li>');
+    var actual = $.trim($('<div>').append($actual).remove().html());
+    var expect = $.trim($('<div>').append($expect).remove().html());
+    equals(actual, expect);
+  });
+  test("it should be able to fill all matched templates with one parameter hash", function(){
+    var params = {"class_name": "template_class", "content": "template content"};
+    var $actual = $("#template li").templatize(params);
+    var $expect = $('<li class="template_class">template content</li>').add('<li class="template_class">template content</li>');
+    var actual = $.trim($('<div>').append($actual).remove().html());
+    var expect = $.trim($('<div>').append($expect).remove().html());
+    equals(actual, expect);
+  });
+  test("it should be able to fill each matched template with a respective parameter hash from an array of hashes", function(){
+    var params = [{"class_name": "template_class1", "content": "template content1"}, {"class_name": "template_class2", "content": "template content2"}];
+    var $actual = $("#template li").templatize(params);
+    var $expect = $('<li class="template_class1">template content1</li>').add('<li class="template_class2">template content2</li>');
+    var actual = $.trim($('<div>').append($actual).remove().html());
+    var expect = $.trim($('<div>').append($expect).remove().html());
+    equals(actual, expect);
+  });
+  
 })(jQuery);
