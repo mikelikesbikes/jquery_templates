@@ -88,4 +88,27 @@
     ok(this.template.fillCalled);
   });
 
+  module("after a template is filled", {
+    setup: function(){
+      this.params = {"class_name": "template_class", "content": "template content"};
+      this.afterFillCalled = false;
+      this.afterFill = function(){
+        this.afterFillCalled = true;
+        this.instanceofTemplate = (this instanceof $.Template);
+      };
+      this.template = new $.Template('<li class="__class_name__">__content__</li>', {"afterFill":this.afterFill});
+    },
+    teardown: function(){
+      
+    }
+  });
+  test("it should fire the 'afterFill' callback", function(){
+    this.template.fill(this.params);
+    same(this.template.afterFillCalled, true);
+  });
+  test("it should pass the template to 'afterFill' as 'this'", function(){
+    this.template.fill(this.params);
+    same(this.template.instanceofTemplate, true);
+  });
+
 })(jQuery);
