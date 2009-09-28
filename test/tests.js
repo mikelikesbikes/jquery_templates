@@ -13,12 +13,10 @@
     var template = new $.Template(this.source);
     equals(template.str, this.source);
   });
-  
   test("it should be able to be created from jquery selector", function() {
     var template = new $.Template("#template li");
     equals(template.str, this.source);
   });
-  
   test("it should be able to be created from jquery object", function() {
     var template = new $.Template($("#template li"));
     equals(template.str, this.source);
@@ -52,6 +50,10 @@
   module("when a template is filled", {
     setup: function() {
       this.template = new $.Template('<li class="__class_name__">__content__</li>');
+      this.template2 = new $.Template('<li class="{class_name}">{content}</li>', {
+        "begin_sep": "{",
+        "end_sep": "}"
+      });
     }
   });
   test("it should replace variable names with parameter values", function() {
@@ -61,6 +63,10 @@
   test("it should replace variables with no parameter value with blank", function() {
     var actual = this.template.fill({});
     equals(actual, '<li class=""></li>');
+  });
+  test("it should be able to use custom separators", function(){
+    var actual = this.template2.fill({"class_name": "template_class", "content": "content"});
+    equals(actual, '<li class="template_class">content</li>');
   });
   
   module("when a template is used as a parameter to jQuery.domManip", {
